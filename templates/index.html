@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Educational cancer type classification using gene expression and machine learning.">
+
+    <title>BioMedPredict | Gene Expression ML</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="/">
+            <span class="brand-icon">B</span>
+            <span>BioMedPredict</span>
+        </a>
+
+        <span class="header-label">BIOINFORMATICS · MACHINE LEARNING</span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <p class="eyebrow">GENE EXPRESSION ANALYTICS</p>
+
+            <h1>Cancer Type Classification</h1>
+
+            <p class="hero-description">
+                Explore machine learning predictions from gene-expression
+                measurements using a trained classification pipeline.
+            </p>
+
+            <div class="status-row">
+                <span class="status-dot"></span>
+                <span>Model inference interface</span>
+            </div>
+        </section>
+
+        <section class="panel upload-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">STEP 01</p>
+                    <h2>Upload gene-expression data</h2>
+                </div>
+                <span class="file-badge">CSV</span>
+            </div>
+
+            <p class="muted">
+                Upload a CSV containing the same gene feature names and
+                compatible measurements used to train the model.
+            </p>
+
+            <form method="POST" enctype="multipart/form-data">
+                <label for="dataset" class="upload-box">
+                    <span class="upload-icon">↑</span>
+                    <strong>Select your dataset</strong>
+                    <span class="muted">
+                        CSV format · Maximum file size 25 MB
+                    </span>
+                    <input
+                        type="file"
+                        id="dataset"
+                        name="dataset"
+                        accept=".csv,text/csv"
+                        required
+                    >
+                </label>
+
+                <p id="file-name" class="file-name">
+                    No file selected
+                </p>
+
+                <button type="submit" class="primary-button">
+                    Run ML Prediction
+                    <span aria-hidden="true">→</span>
+                </button>
+            </form>
+        </section>
+
+        {% if error %}
+        <section class="message error-message" role="alert">
+            <strong>Unable to process the dataset</strong>
+            <p>{{ error }}</p>
+        </section>
+        {% endif %}
+
+        {% if predictions %}
+        <section class="panel results-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">STEP 02</p>
+                    <h2>Prediction results</h2>
+                </div>
+                <span class="result-badge">Completed</span>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <span class="muted">Samples processed</span>
+                    <strong>{{ predictions|length }}</strong>
+                </div>
+
+                <div class="summary-card">
+                    <span class="muted">Selected model</span>
+                    <strong class="model-name">{{ model_name }}</strong>
+                </div>
+            </div>
+
+            <p class="muted">
+                Input file: {{ input_filename }}
+            </p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            {% for column in predictions[0].keys() %}
+                            <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for row in predictions %}
+                        <tr>
+                            {% for value in row.values() %}
+                            <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="muted small">
+                Scores are model outputs and may not be calibrated
+                probabilities. They should not be interpreted as clinical
+                confidence or used for medical decisions.
+            </p>
+        </section>
+        {% endif %}
+
+        <section class="notice">
+            <strong>Research and educational use only</strong>
+            <p>
+                This project demonstrates machine learning on a public
+                gene-expression dataset. Predictions are not clinically
+                validated and must not be used to diagnose patients or guide
+                treatment.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>BioMedPredict · Bioinformatics Research &amp; Data Analytics</p>
+    </footer>
+
+    <script>
+        const fileInput = document.getElementById("dataset");
+        const fileName = document.getElementById("file-name");
+
+        fileInput.addEventListener("change", function () {
+            fileName.textContent = this.files.length
+                ? this.files[0].name
+                : "No file selected";
+        });
+    </script>
+</body>
+</html>
